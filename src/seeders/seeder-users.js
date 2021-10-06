@@ -10,7 +10,6 @@ module.exports = {
       address: 'Ho Chi Minh',
       gender: 1,
       roleId: "ROLE",
-    //   keyRole: "R1",
       createdAt: new Date(),
       updatedAt: new Date()
     }]);

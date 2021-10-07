@@ -101,25 +101,25 @@ let createNewUser = (data) => {
             if(check === true) {
                 resolve({
                     errCode: 1,
-                    message: 'Error, email is already in used !'
+                    errMessage: 'Error, email is already in used !'
+                })
+            } else {
+                let hashPasswordFromBycypt = await hashPassword(data.password);
+                await db.User.create({
+                    email: data.email,
+                    password: hashPasswordFromBycypt,
+                    firstName: data.firstName,
+                    lastName: data.lastName,
+                    address: data.address,
+                    gender: data.gender === '1' ? true : false,
+                    roleId: data.roleId,
+                    phonenumber: data.phonenumber,
+                })
+                resolve({
+                    errCode: 0,
+                    message: 'Done'
                 })
             }
-
-            let hashPasswordFromBycypt = await hashPassword(data.password);
-            await db.User.create({
-                email: data.email,
-                password: hashPasswordFromBycypt,
-                firstName: data.firstName,
-                lastName: data.lastName,
-                address: data.address,
-                gender: data.gender === '1' ? true : false,
-                roleId: data.roleId,
-                phonenumber: data.phonenumber,
-            })
-            resolve({
-                errCode: 0,
-                message: 'Done'
-            })
         } catch(e) {
             reject(e)
         }

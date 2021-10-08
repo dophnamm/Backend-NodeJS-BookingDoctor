@@ -41,7 +41,7 @@ let handleUserLogin = (email, password) => {
             if(isExist){
                 //compare password
                 let user = await db.User.findOne({
-                    attributes: ['email', 'roleId', 'password'],
+                    attributes: ['email', 'roleId', 'password', 'firstName', 'lastName'],
                     where: {email},
                     raw: true
                 })

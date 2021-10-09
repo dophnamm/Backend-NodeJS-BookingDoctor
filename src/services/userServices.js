@@ -164,7 +164,7 @@ let updateUser = (data) => {
             if(user) {
                 user.firstName = data.firstName;
                 user.lastName = data.lastName;
-                user.addressName = data.address;
+                user.address = data.address;
                 
                 await user.save();
 

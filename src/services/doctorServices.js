@@ -153,14 +153,8 @@ let bulkCreateSchedule = (data) => {
                     attributes: ['timeType', 'date', 'doctorId', 'maxNumber'],
                     raw: true
                 })
-                if (exising && exising.length > 0) {
-                    exising = exising.map(item => {
-                        item.date = new Date(item.date).getTime()
-                        return item
-                    })
-                }
                 let toCreate = _.differenceWith(schedule, exising, (a, b) => {
-                    return a.timeType === b.timeType && a.date === b.date
+                    return a.timeType === b.timeType && +a.date === +b.date
                 })
 
                 if (toCreate && toCreate.length > 0) {
@@ -179,10 +173,45 @@ let bulkCreateSchedule = (data) => {
     })
 }
 
+let getScheduleByDate = (doctorId, date) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            if (!doctorId || !date) {
+                resolve({
+                    errCode: 1,
+                    errMessage: 'Missing require parameter .'
+                })
+            } else {
+                let data = await db.Schedules.findAll({
+                    where: { doctorId, date },
+                    include: [
+                        {
+                            model: db.Allcode, as: 'timeTypeData',
+                            attributes: ['valueEn', 'valueVi']
+                        }
+                    ],
+                    raw: false,
+                    nest: true
+                })
+
+                if (!data) data = [];
+
+                resolve({
+                    errCode: 0,
+                    data
+                })
+            }
+        } catch (e) {
+            reject(e)
+        }
+    })
+}
+
 module.exports = {
     getTopDoctorHome,
     getAllDoctors,
     saveDetailInfoDoctor,
     getDetailDoctorById,
-    bulkCreateSchedule
+    bulkCreateSchedule,
+    getScheduleByDate
 }

@@ -6,7 +6,7 @@ let getTopDoctorHome = async (req, res) => {
     try {
         let response = await doctorServices.getTopDoctorHome(+limit);
         return res.status(200).json(response)
-    } catch(e) {
+    } catch (e) {
         console.log(e)
         return res.status(200).json({
             errCode: -1,
@@ -19,7 +19,7 @@ let getAllDoctors = async (req, res) => {
     try {
         let doctors = await doctorServices.getAllDoctors();
         return res.status(200).json(doctors)
-    } catch(e) {
+    } catch (e) {
         console.log(e)
         return res.status(200).json({
             errCode: -1,
@@ -45,7 +45,20 @@ let getDetailDoctorById = async (req, res) => {
     try {
         let info = await doctorServices.getDetailDoctorById(req.query.id)
         return res.status(200).json(info)
-    } catch(e) {
+    } catch (e) {
+        console.log(e)
+        return res.status(200).json({
+            errCode: -1,
+            errMessage: 'Error from sever...'
+        })
+    }
+}
+
+let blukCreateSchedule = async (req, res) => {
+    try {
+        let info = await doctorServices.bulkCreateSchedule(req.body)
+        return res.status(200).json(info)
+    } catch (e) {
         console.log(e)
         return res.status(200).json({
             errCode: -1,
@@ -58,5 +71,6 @@ module.exports = {
     getTopDoctorHome,
     getAllDoctors,
     postInfoDoctor,
-    getDetailDoctorById
+    getDetailDoctorById,
+    blukCreateSchedule
 }

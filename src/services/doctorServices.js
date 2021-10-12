@@ -50,7 +50,9 @@ let saveDetailInfoDoctor = (inputdata) => {
     return new Promise(async (resolve, reject) => {
         try {
             if (!inputdata.doctorId || !inputdata.contentHTML || !inputdata.contentMarkdown
-                || !inputdata.action
+                || !inputdata.action || !inputdata.selectedPrice || !inputdata.selectedPayment
+                || !inputdata.selectedProvince || !inputdata.nameClinic || !inputdata.addressClinic
+                || !inputdata.note
             ) {
                 resolve({
                     errCode: 1,
@@ -70,13 +72,40 @@ let saveDetailInfoDoctor = (inputdata) => {
                         raw: false
                     })
                     if (doctorMarkdown) {
-                        doctorMarkdown.contentHTML = inputdata.contentHTML,
-                            doctorMarkdown.contentMarkdown = inputdata.contentMarkdown,
-                            doctorMarkdown.description = inputdata.description,
-                            await doctorMarkdown.save()
+                        doctorMarkdown.contentHTML = inputdata.contentHTML;
+                        doctorMarkdown.contentMarkdown = inputdata.contentMarkdown;
+                        doctorMarkdown.description = inputdata.description;
+                        await doctorMarkdown.save();
                     }
                 }
 
+                // up sert info doctor table
+                let doctorInfo = await db.Doctor_Infor.findOne({
+                    where: { doctorId: inputdata.doctorId },
+                    raw: false
+                })
+                if (doctorInfo) {
+                    // update
+                    doctorInfo.doctorId = inputdata.doctorId;
+                    doctorInfo.priceId = inputdata.selectedPrice;
+                    doctorInfo.provinceId = inputdata.selectedProvince;
+                    doctorInfo.paymentId = inputdata.selectedPayment;
+                    doctorInfo.nameClinic = inputdata.nameClinic;
+                    doctorInfo.addressClinic = inputdata.addressClinic;
+                    doctorInfo.note = inputdata.note;
+                    await doctorInfo.save();
+                } else {
+                    // create
+                    await db.Doctor_Infor.create({
+                        doctorId: inputdata.doctorId,
+                        priceId: inputdata.selectedPrice,
+                        provinceId: inputdata.selectedProvince,
+                        paymentId: inputdata.selectedPayment,
+                        nameClinic: inputdata.nameClinic,
+                        addressClinic: inputdata.addressClinic,
+                        note: inputdata.note,
+                    })
+                }
                 resolve({
                     errCode: 0,
                     errMessage: 'Success'
@@ -108,7 +137,16 @@ let getDetailDoctorById = (id) => {
                         {
                             model: db.Allcode, as: 'positionData',
                             attributes: ['valueEn', 'valueVi']
-                        }
+                        },
+                        {
+                            model: db.Doctor_Infor,
+                            attributes: { exclude: ['id', 'doctorId'] },
+                            include: [
+                                { model: db.Allcode, as: 'priceTypeData', attributes: ['valueEn', 'valueVi'] },
+                                { model: db.Allcode, as: 'provinceTypeData', attributes: ['valueEn', 'valueVi'] },
+                                { model: db.Allcode, as: 'paymentTypeData', attributes: ['valueEn', 'valueVi'] }
+                            ]
+                        },
                     ],
                     raw: false,
                     nest: true

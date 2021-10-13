@@ -80,11 +80,39 @@ let getScheduleByDate = async (req, res) => {
     }
 }
 
+let getExtraInfoById = async (req, res) => {
+    try {
+        let info = await doctorServices.getExtraInfoById(req.query.doctorId)
+        return res.status(200).json(info)
+    } catch (e) {
+        console.log(e)
+        return res.status(200).json({
+            errCode: -1,
+            errMessage: 'Error from sever...'
+        })
+    }
+}
+
+let getProfileDoctorById = async (req, res) => {
+    try {
+        let info = await doctorServices.getProfileDoctorById(req.query.doctorId)
+        return res.status(200).json(info)
+    } catch (e) {
+        console.log(e)
+        return res.status(200).json({
+            errCode: -1,
+            errMessage: 'Error from sever...'
+        })
+    }
+}
+
 module.exports = {
     getTopDoctorHome,
     getAllDoctors,
     postInfoDoctor,
     getDetailDoctorById,
     blukCreateSchedule,
-    getScheduleByDate
+    getScheduleByDate,
+    getExtraInfoById,
+    getProfileDoctorById
 }

@@ -10,8 +10,9 @@ module.exports = (sequelize, DataTypes) => {
   Clinics.init({
     name: DataTypes.STRING,
     address: DataTypes.STRING,
-    description: DataTypes.TEXT,
-    image: DataTypes.STRING,
+    image: DataTypes.TEXT,
+    descriptionHTML: DataTypes.TEXT,
+    descriptionMarkdown: DataTypes.TEXT
   }, {
     sequelize,
     modelName: 'Clinics',

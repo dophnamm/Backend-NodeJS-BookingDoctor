@@ -42,7 +42,7 @@ let getBodyHTMLEmail = (dataSend) => {
     if (dataSend.language === 'en') {
         result = `
             <h2>Thank you for booking an appointment at Healthy Care</h2>
-            <p>HHealthy Care informs you that your appointment has been received and is pending.</p>
+            <p>Healthy Care informs you that your appointment has been received and is pending.</p>
             <br>
             <h3>Hello, ${dataSend.patientName}</h3>
             <h3>Your medical appointment information.<h3>
@@ -55,8 +55,73 @@ let getBodyHTMLEmail = (dataSend) => {
             <p>Sincerely thank you, Healthy Care .</p>
         `
     }
-
     return result;
 }
 
-module.exports = { sendSimpleEmail }
+let getBodyHTMLEmailRemedy = (dataSend) => {
+    let result = ''
+    if (dataSend.language === 'vi') {
+        result = `
+            <h2> Cảm ơn quý khách đặt lịch khám tại Healthy Care</ >
+            <br>
+            <h3>Xin chào ${dataSend.patientName}, </h3>
+            <p>Thông tin hoá đơn khám bệnh của bạn được gửi tại file đính kèm bên dưới. Vui
+                lòng kiểm tra lại, có thắc xin vui lòng liên hệ lại với chúng tôi !
+            <p>
+            <br>
+            <p>Xin chân thành cảm quý khách, Healthy Care .</p>
+        `
+    }
+
+    if (dataSend.language === 'en') {
+        result = `
+            <h2>Thank you for booking an appointment at Healthy Care</h2>
+            <br>
+            <h3>Hello,${dataSend.patientName} </h3>
+            <p>
+            Information on your medical examination bill is sent in the attached file below. 
+            Please check again, if you have any questions, please contact us!
+            </p>
+            <br>
+            <p>Sincerely thank you, Healthy Care .</p>
+        `
+    }
+    return result;
+}
+
+let sendAttachment = async (dataSend) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+
+
+            let transporter = nodemailer.createTransport({
+                host: "smtp.gmail.com",
+                port: 587,
+                secure: false,
+                auth: {
+                    user: process.env.EMAIL_APP,
+                    pass: process.env.EMAIL_APP_PASSWORD,
+                },
+            });
+
+            let info = await transporter.sendMail({
+                from: '"Healthy Care" <demoweb1209@gmail.com>',
+                to: dataSend.email,
+                subject: "Thông tin hoá đơn khám bệnh",
+                html: getBodyHTMLEmailRemedy(dataSend),
+                attachments: [
+                    {
+                        filename: `${dataSend.patientId} - ${dataSend.patientName}.png`,
+                        content: dataSend.imageBase64.split("base64")[1],
+                        encoding: 'base64',
+                    }
+                ]
+            });
+            resolve()
+        } catch (e) {
+            reject(e)
+        }
+    })
+}
+
+module.exports = { sendSimpleEmail, sendAttachment }
